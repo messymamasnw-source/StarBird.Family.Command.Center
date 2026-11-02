@@ -1,66 +1,167 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import AppShell from './components/AppShell';
+import { api } from './lib/api';
 
-const navItems = [
-  { to: '/dashboard', label: 'My Command Center' },
-  { to: '/calendar', label: 'Family Calendar' },
-  { to: '/children', label: 'Children & Schools' },
-  { to: '/household', label: 'Household Management' },
-  { to: '/meals', label: 'Meals & Groceries' },
-  { to: '/finances', label: 'Family Finances' },
-  { to: '/business-1', label: 'Business 1' },
-  { to: '/business-2', label: 'Business 2' },
-  { to: '/business-3', label: 'Business 3' },
-  { to: '/speaking', label: 'Speaking & Visibility' },
-  { to: '/priorities', label: 'My Priorities' },
-  { to: '/ai', label: 'AI Chief of Staff' },
-  { to: '/family', label: 'Family Members' },
-  { to: '/settings', label: 'Settings & Integrations' },
-];
+function AuthScreen() {
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<'login' | 'signup'>('signup');
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    householdName: 'The Family',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-function AppShell() {
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      const result =
+        mode === 'signup'
+          ? await api.signup(form)
+          : await api.login({ email: form.email, password: form.password });
+
+      localStorage.setItem('sb_token', result.token);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to authenticate');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-ivory text-espresso">
-      <div className="mx-auto flex max-w-[1600px] flex-col lg:flex-row">
-        <aside className="border-b border-sage/40 bg-white/70 p-4 backdrop-blur lg:min-h-screen lg:w-72 lg:border-b-0 lg:border-r">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-espresso text-lg font-semibold text-ivory">SB</div>
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-sage">Command</div>
-              <div className="text-lg font-semibold">StarBird</div>
-            </div>
+    <div className="flex min-h-screen items-center justify-center bg-[#f8f4ee] p-4">
+      <div className="w-full max-w-md rounded-[32px] border border-sage/40 bg-white/80 p-6 shadow-soft backdrop-blur">
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-espresso text-xl font-semibold text-ivory">
+            SB
+          </div>
+          <h1 className="text-2xl font-semibold">StarBird Family Command Center</h1>
+          <p className="mt-2 text-sm text-charcoal/70">
+            Private family coordination for the modern household.
+          </p>
+        </div>
+
+        <div className="mb-4 flex rounded-xl border border-sage/50 bg-ivory p-1">
+          <button
+            type="button"
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${
+              mode === 'signup' ? 'bg-espresso text-white' : 'text-charcoal/80'
+            }`}
+            onClick={() => setMode('signup')}
+          >
+            Sign up
+          </button>
+          <button
+            type="button"
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold ${
+              mode === 'login' ? 'bg-espresso text-white' : 'text-charcoal/80'
+            }`}
+            onClick={() => setMode('login')}
+          >
+            Sign in
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-3">
+          {mode === 'signup' && (
+            <>
+              <div>
+                <label className="label">First name</label>
+                <input
+                  className="input"
+                  value={form.firstName}
+                  onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="label">Last name</label>
+                <input
+                  className="input"
+                  value={form.lastName}
+                  onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label className="label">Household name</label>
+                <input
+                  className="input"
+                  value={form.householdName}
+                  onChange={(e) => setForm({ ...form, householdName: e.target.value })}
+                  required
+                />
+              </div>
+            </>
+          )}
+
+          <div>
+            <label className="label">Email</label>
+            <input
+              type="email"
+              className="input"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              required
+            />
           </div>
 
-          <nav className="grid gap-1">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `nav-item ${isActive ? 'bg-sage/12 text-espresso' : ''}`
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-        </aside>
+          <div>
+            <label className="label">Password</label>
+            <input
+              type="password"
+              className="input"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              required
+            />
+          </div>
 
-        <main className="flex-1 p-4 pb-28 md:p-6 lg:pb-6">
-          <Outlet />
-        </main>
-      </div>
+          {error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
 
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-sage/40 bg-white/95 p-3 shadow-soft lg:hidden">
-        <div className="grid grid-cols-4 gap-2 text-center text-[11px] font-medium text-charcoal/80">
-          {navItems.slice(0, 8).map((item) => (
-            <NavLink key={item.to} to={item.to} className="rounded-lg px-2 py-2 hover:bg-sage/10">
-              {item.label.split(' ')[0]}
-            </NavLink>
-          ))}
-        </div>
+          <button className="btn-primary w-full" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Working...' : mode === 'signup' ? 'Create household' : 'Sign in'}
+          </button>
+        </form>
       </div>
     </div>
   );
 }
 
-export default AppShell;
+function App() {
+  const [ready, setReady] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('sb_token');
+    setAuthenticated(Boolean(token));
+    setReady(true);
+  }, []);
+
+  if (!ready) return <div className="min-h-screen bg-ivory" />;
+
+  if (!authenticated) {
+    return <AuthScreen />;
+  }
+
+  return (
+    <Routes>
+      <Route path="/*" element={<AppShell />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
+  );
+}
+
+export default App;

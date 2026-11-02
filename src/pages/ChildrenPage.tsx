@@ -62,19 +62,29 @@ function CalendarPage() {
           <h2 className="text-xl font-semibold">Calendar events</h2>
           <div className="mt-4 space-y-3">
             {events.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-sage/60 p-6 text-sm text-charcoal/70">No events added yet.</div>
+              <div className="rounded-xl border border-dashed border-sage/60 p-6 text-sm text-charcoal/70">
+                No events added yet.
+              </div>
             ) : (
               events.map((event) => (
                 <div key={event.id} className="rounded-2xl border border-sage/30 bg-ivory p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="font-semibold">{event.title}</div>
-                      <div className="mt-1 text-sm text-charcoal/70">{new Date(event.dateTime).toLocaleString()}</div>
+                      <div className="mt-1 text-sm text-charcoal/70">
+                        {new Date(event.dateTime).toLocaleString()}
+                      </div>
                     </div>
-                    <button className="btn-secondary px-2 py-1 text-xs" onClick={() => handleDelete(event.id)}>Delete</button>
+                    <button className="btn-secondary px-2 py-1 text-xs" onClick={() => handleDelete(event.id)}>
+                      Delete
+                    </button>
                   </div>
-                  <div className="mt-2 text-sm text-charcoal/70">{event.location ?? 'Location pending'}</div>
-                  <div className="mt-1 text-sm text-charcoal/70">Participants: {event.participants ?? 'Family members'}</div>
+                  <div className="mt-2 text-sm text-charcoal/70">
+                    {event.location ?? 'Location pending'}
+                  </div>
+                  <div className="mt-1 text-sm text-charcoal/70">
+                    Participants: {event.participants ?? 'Family members'}
+                  </div>
                 </div>
               ))
             )}
@@ -86,47 +96,94 @@ function CalendarPage() {
           <div className="mt-4 space-y-3">
             <div>
               <label className="label">Title</label>
-              <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
+              <input
+                className="input"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                required
+              />
             </div>
             <div>
               <label className="label">Date & time</label>
-              <input type="datetime-local" className="input" value={form.dateTime} onChange={(e) => setForm({ ...form, dateTime: e.target.value })} required />
+              <input
+                type="datetime-local"
+                className="input"
+                value={form.dateTime}
+                onChange={(e) => setForm({ ...form, dateTime: e.target.value })}
+                required
+              />
             </div>
             <div>
               <label className="label">Location</label>
-              <input className="input" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+              <input
+                className="input"
+                value={form.location}
+                onChange={(e) => setForm({ ...form, location: e.target.value })}
+              />
             </div>
             <div>
               <label className="label">Participants</label>
-              <input className="input" value={form.participants} onChange={(e) => setForm({ ...form, participants: e.target.value })} />
+              <input
+                className="input"
+                value={form.participants}
+                onChange={(e) => setForm({ ...form, participants: e.target.value })}
+              />
             </div>
             <div>
               <label className="label">Transportation</label>
-              <input className="input" value={form.transportation} onChange={(e) => setForm({ ...form, transportation: e.target.value })} />
+              <input
+                className="input"
+                value={form.transportation}
+                onChange={(e) => setForm({ ...form, transportation: e.target.value })}
+              />
             </div>
             <div>
               <label className="label">Preparation</label>
-              <textarea className="input min-h-[80px]" value={form.preparation} onChange={(e) => setForm({ ...form, preparation: e.target.value })} />
+              <textarea
+                className="input min-h-[80px]"
+                value={form.preparation}
+                onChange={(e) => setForm({ ...form, preparation: e.target.value })}
+              />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="label">Travel time</label>
-                <input type="number" className="input" value={form.travelTimeMinutes} onChange={(e) => setForm({ ...form, travelTimeMinutes: Number(e.target.value) })} />
+                <input
+                  type="number"
+                  className="input"
+                  value={form.travelTimeMinutes}
+                  onChange={(e) => setForm({ ...form, travelTimeMinutes: Number(e.target.value) })}
+                />
               </div>
               <div>
                 <label className="label">Reminder</label>
-                <input type="number" className="input" value={form.reminderMinutes} onChange={(e) => setForm({ ...form, reminderMinutes: Number(e.target.value) })} />
+                <input
+                  type="number"
+                  className="input"
+                  value={form.reminderMinutes}
+                  onChange={(e) => setForm({ ...form, reminderMinutes: Number(e.target.value) })}
+                />
               </div>
             </div>
             <div>
               <label className="label">Recurrence</label>
-              <input className="input" value={form.recurrence} onChange={(e) => setForm({ ...form, recurrence: e.target.value })} />
+              <input
+                className="input"
+                value={form.recurrence}
+                onChange={(e) => setForm({ ...form, recurrence: e.target.value })}
+              />
             </div>
             <div>
               <label className="label">Notes</label>
-              <textarea className="input min-h-[80px]" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+              <textarea
+                className="input min-h-[80px]"
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+              />
             </div>
-            <button className="btn-primary w-full" type="submit">Save event</button>
+            <button className="btn-primary w-full" type="submit">
+              Save event
+            </button>
           </div>
         </form>
       </div>

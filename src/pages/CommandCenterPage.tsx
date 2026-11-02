@@ -1,14 +1,12 @@
-import { useState } from 'react';
 import { NavLink, Route, Routes, useNavigate } from 'react-router-dom';
-import { api } from '../lib/api';
-import CommandCenterPage from '../pages/CommandCenterPage';
 import CalendarPage from '../pages/CalendarPage';
 import ChildrenPage from '../pages/ChildrenPage';
-import HouseholdPage from '../pages/HouseholdPage';
-import TasksPage from '../pages/TasksPage';
+import CommandCenterPage from '../pages/CommandCenterPage';
 import FamilyPage from '../pages/FamilyPage';
-import SettingsPage from '../pages/SettingsPage';
+import HouseholdPage from '../pages/HouseholdPage';
 import PlaceholderPage from '../pages/PlaceholderPage';
+import SettingsPage from '../pages/SettingsPage';
+import TasksPage from '../pages/TasksPage';
 
 const navItems = [
   { to: '/dashboard', label: 'My Command Center' },
@@ -33,7 +31,7 @@ function AppShell() {
 
   const handleLogout = () => {
     localStorage.removeItem('sb_token');
-    navigate('/auth');
+    navigate('/');
   };
 
   return (
@@ -41,9 +39,13 @@ function AppShell() {
       <div className="mx-auto flex max-w-[1800px] flex-col lg:flex-row">
         <aside className="hidden w-72 border-r border-sage/40 bg-white/70 p-4 backdrop-blur lg:block">
           <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-espresso text-lg font-semibold text-ivory">SB</div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-espresso text-lg font-semibold text-ivory">
+              SB
+            </div>
             <div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sage">Command</div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-sage">
+                Command
+              </div>
               <div className="text-lg font-semibold">StarBird</div>
             </div>
           </div>
@@ -62,22 +64,33 @@ function AppShell() {
             ))}
           </nav>
 
-          <button onClick={handleLogout} className="btn-secondary mt-8 w-full">Sign out</button>
+          <button onClick={handleLogout} className="btn-secondary mt-8 w-full">
+            Sign out
+          </button>
         </aside>
 
         <div className="fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b border-sage/40 bg-white/90 p-3 backdrop-blur lg:hidden">
           <div className="flex items-center gap-3">
-            <button className="btn-secondary px-3 py-2" onClick={() => setSidebarOpen((v) => !v)}>Menu</button>
+            <button className="btn-secondary px-3 py-2" onClick={() => setSidebarOpen((v) => !v)}>
+              Menu
+            </button>
             <div className="text-sm font-semibold">StarBird</div>
           </div>
-          <button className="btn-secondary px-3 py-2" onClick={handleLogout}>Sign out</button>
+          <button className="btn-secondary px-3 py-2" onClick={handleLogout}>
+            Sign out
+          </button>
         </div>
 
         {sidebarOpen && (
           <div className="fixed inset-0 top-[64px] z-20 bg-ivory/95 p-4 lg:hidden">
             <nav className="space-y-1">
               {navItems.map((item) => (
-                <NavLink key={item.to} to={item.to} onClick={() => setSidebarOpen(false)} className="nav-item block">
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setSidebarOpen(false)}
+                  className="nav-item block"
+                >
                   {item.label}
                 </NavLink>
               ))}
