@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum HouseholdRole {
+  OWNER
+  PARENT
+  ADULT_HELPER
+  CHILD
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  ROLE_CHANGE
+}
+
+model Household {
+  id          String   @id @default(cuid())
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     HouseholdMembership[]
+  children    Child[]
+  schools     School[]
+  events      CalendarEvent[]
+  tasks       Task[]
+  responsibilities Responsibility[]
+  auditLogs   AuditLog[]
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  phone         String?
+  colorTheme    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  memberships   HouseholdMembership[]
+  responsibilities Responsibility[]
+  assignedTasks Task[]
+  ownedEvents   CalendarEvent[]
+  auditLogs     AuditLog[]
+}
+
+model HouseholdMembership {
+  id          String         @id @default(cuid())
+  householdId  String
+  userId      String
+  role        HouseholdRole
+  createdAt   DateTime       @default(now())
+
+  household    Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([householdId, userId])
+}
+
+model Child {
+  id              String       @id @default(cuid())
+  householdId     String
+  firstName       String
+  lastName        String?
+  nickName        String?
+  gradeLevel      String?
+  schoolId        String?
+  birthDate       DateTime?
+  careNotes       String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  household       Household    @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  school          School?      @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  responsibilities Responsibility[]
+}
+
+model School {
+  id            String   @id @default(cuid())
+  householdId   String
+  name          String
+  address       String?
+  phone         String?
+  contactName   String?
+  contactEmail  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  household     Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  children      Child[]
+}
+
+model CalendarEvent {
+  id                  String   @id @default(cuid())
+  householdId         String
+  title               String
+  dateTime            DateTime
+  location            String?
+  participants        String?
+  responsibleAdultId  String?
+  transportation      String?
+  preparation         String?
+  travelTimeMinutes   Int?
+  reminderMinutes    Int?
+  recurrence          String?
+  notes               String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  household           Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  responsibleAdult    User?     @relation(fields: [responsibleAdultId], references: [id], onDelete: SetNull)
+}
+
+model Task {
+  id            String    @id @default(cuid())
+  householdId   String
+  title         String
+  dueDate       DateTime?
+  assigneeId    String?
+  recurrence    String?
+  notes         String?
+  completed     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  household     Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  assignee      User?     @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+}
+
+model Responsibility {
+  id          String    @id @default(cuid())
+  householdId  String
+  title       String
+  dueDate     DateTime?
+  assigneeId  String?
+  childId     String?
+  notes       String?
+  status      String    @default("open")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  assignee    User?     @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+  child       Child?    @relation(fields: [childId], references: [id], onDelete: SetNull)
+}
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  householdId  String
+  userId      String?
+  action      AuditAction
+  entityType  String
+  entityId    String
+  details     String?
+  createdAt   DateTime    @default(now())
+
+  household   Household   @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
